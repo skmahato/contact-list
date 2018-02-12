@@ -67,7 +67,6 @@ class InputFields extends React.Component{
     temp.push(input);
     let newStep = this.state.stepNo;
     newStep===1?newStep=2:newStep=1;
-    // this.setState({stepNo: newStep});
     this.setState({
       nameList: temp,
       stepNo: newStep,
@@ -95,7 +94,7 @@ class InputFields extends React.Component{
   render(){
     const PAGE_RENDER=this.state.stepNo
       switch(PAGE_RENDER) {
-        
+
         case 2://input
         return(
         <div className="container">

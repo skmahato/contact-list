@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import {SortableContainer, SortableElement} from 'react-sortable-hoc';
 
 const SortableItem = SortableElement(({value}) =>
-<div className="odd-even row">
-  <div className="col-md-6 col-md-offset-3  list-style">
+<div className="col-md-6 col-md-offset-3">
+  <div className="odd-even row reorder-style">
     <div className="col-sm-6">
        <p>{value.name}</p>
     </div>

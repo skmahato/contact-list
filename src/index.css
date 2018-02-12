@@ -20,7 +20,16 @@ h1{
 .list-style{
   border: 1px solid  #abb2b9 ;
   margin-bottom: 2px;
+  margin-right: 0px;
+  margin-left: 0px;
   border-radius: 5px;
+}
+.reorder-style{
+  border: 1px solid  #abb2b9 ;
+  margin-bottom: 2px;
+  border-radius: 5px;
+  margin-right: -8px;
+  margin-left: -8px;
 }
 .button-style{
   margin-top: 5px;
