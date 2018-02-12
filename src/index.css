@@ -2,7 +2,7 @@
   background-color: #6cf3ce;
 }
 h1{
-  padding-top: 20px;
+  padding-top: 5px;
 }
 .no-contents{
   font-style: italic;
@@ -17,9 +17,17 @@ h1{
 .contacts{
   background-color: #B2D965;
 }
+.list-style{
+  border: 1px solid  #abb2b9 ;
+  margin-bottom: 2px;
+  border-radius: 5px;
+}
 .button-style{
   margin-top: 5px;
   margin-right: 5px;
+}
+.buttons-style{
+  margin-top: 5px;
 }
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
