@@ -19,7 +19,7 @@ class InputFields extends Component{
   }
 
   deleteHandler = (val) => {
-    const newState = this.state.nameList.slice();
+    const newState = [...this.state.nameList];
     if ( newState.indexOf(val) > -1 ) {
       newState.splice(newState.indexOf(val), 1);
       this.setState({
