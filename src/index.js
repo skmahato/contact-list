@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css'
 import Header from './header'
 import InputFields from './inputFields'
 
-class Testing extends React.Component {
+class ContactList extends Component {
 
   render() {
     return (
@@ -12,12 +12,11 @@ class Testing extends React.Component {
         <Header />
         <InputFields />
       </div>
-
     );
   }
 }
 
 ReactDOM.render(
-  <Testing />,
+  <ContactList />,
   document.getElementById('root')
 );
