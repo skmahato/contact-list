@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { arrayMove } from 'react-sortable-hoc';
+import axios from 'axios';
+
 import SortableComponent from './dragdrop'
 import DisplayContects from './displayContects'
-import { arrayMove } from 'react-sortable-hoc';
 
 class InputFields extends Component{
   state = {
@@ -11,6 +13,16 @@ class InputFields extends Component{
     stepNo: 1,
     searchString: ""
   };
+
+  componentDidMount() {
+    axios.get('http://localhost:3001/contacts.json')
+    .then(response => {
+      console.log(response);
+      this.setState({nameList: response.data})
+    })
+    .catch(error => console.log(error));
+  }
+
 
   changePage = () => {
     let newStep = this.state.stepNo;
