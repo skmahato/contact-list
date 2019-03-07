@@ -11,13 +11,13 @@ class InputFields extends Component{
     number: '',
     nameList: [],
     stepNo: 1,
-    searchString: ""
+    searchString: "",
+    errors: null
   };
 
   componentDidMount() {
     axios.get('http://localhost:3001/contacts.json')
     .then(response => {
-      console.log(response);
       this.setState({nameList: response.data})
     })
     .catch(error => console.log(error));
@@ -65,16 +65,26 @@ class InputFields extends Component{
       'name': name,
       'number': number
     }
-    temp.push(input);
-    let newStep = this.state.stepNo;
-    newStep === 1 ? newStep = 2 : newStep= 1;
-    this.setState({
-      nameList: temp,
-      stepNo: newStep,
-      name: '',
-      number: '',
-      searchString: ''
-    })
+    axios.post('http://localhost:3001/contacts.json', input)
+      .then(response => {
+        if (response.status === 200) {
+          temp.push(input);
+          let newStep = this.state.stepNo;
+          newStep === 1 ? newStep = 2 : newStep= 1;
+          this.setState({
+            nameList: temp,
+            stepNo: newStep,
+            name: '',
+            number: '',
+            searchString: ''
+          })
+        }
+        return response;
+      })
+      .catch(error => {
+        this.setState({...this.state, errors: error.response.data.errors})
+        return error;
+      });
   }
 
   searchHandler = (e) => this.setState({ searchString: e.target.value })
@@ -156,6 +166,8 @@ class InputFields extends Component{
   }
 
   inputFieldsHandler = () => {
+    const { errors } = this.state;
+
     return(
       <div className = "container">
         <div className = "row">
@@ -169,6 +181,7 @@ class InputFields extends Component{
                 placeholder = "Full Name"
               />
             </p>
+            <p>{errors && errors.name}</p>
             <p>
               <input
                 onChange = { this.addUserNumber }
@@ -178,6 +191,7 @@ class InputFields extends Component{
                 placeholder = "10 digit Number"
               />
             </p>
+            <p>{errors && errors.number}</p>
             <p>
               <button
                 disabled = {
