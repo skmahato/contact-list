@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class DisplayContects extends Component{
+class DisplayContacts extends Component{
   state = {
     name: '',
     number: '',
@@ -24,8 +24,12 @@ class DisplayContects extends Component{
   }
 
   updateClick = (val, name, number) => {
-    this.editHandler();
-    this.props.updateHandler(val, name, number);
+    this.props.updateHandler(val, name, number)
+      .then(response => {
+        if (response.status === 200) {
+          this.editHandler();
+        }
+      });
   }
 
   listElement = () => {
@@ -54,38 +58,44 @@ class DisplayContects extends Component{
   }
 
   updateElement = () => {
+    const { errors } = this.props;
+    const { name, number } = this.state;
+    const disabled = name === "" || number === "" || number < 1000000000 || number > 9999999999;
+
     return(
       <div>
           <input
             onChange = { this.addUserName }
             type = "text"
-            value = { this.state.name }
+            value = { name }
             className = "form-control"
           />
+          <p>{errors && errors.name}</p>
           <input
             onChange = { this.addUserNumber }
             type = "number"
-            value = { this.state.number }
+            value = { number }
             className = "form-control"
           />
-          <button
-            disabled = {
-              this.state.name !== ""
-              &&
-              this.state.number !== ""
-              &&
-              this.state.number >= 1000000000
-              &&
-              this.state.number <= 9999999999
-              ?
-              false
-              :
-              true
-            }
-            onClick = { () => this.updateClick(this.props.val, this.state.name, this.state.number) }
-            className = "form-control btn btn-primary">
-            Update
-          </button>
+          <p>{errors && errors.number}</p>
+          <div className = "row buttons-style">
+            <div className = "col-sm-6">
+              <button
+                onClick = { () => this.editHandler() }
+                className = "form-control btn btn-primary">
+                Cancel
+              </button>
+            </div>
+
+            <div className = "col-sm-6">
+              <button
+                disabled = { disabled }
+                onClick = { () => this.updateClick(this.props.val, name, number) }
+                className = "form-control btn btn-primary">
+                Update
+              </button>
+            </div>
+          </div>
       </div>
     )
   }
@@ -101,4 +111,4 @@ class DisplayContects extends Component{
   }
 }
 
-export default DisplayContects
+export default DisplayContacts

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import SortableComponent from './dragdrop'
-import DisplayContects from './displayContects'
 import { arrayMove } from 'react-sortable-hoc';
+
+import { getContacts, newContact, updateContact, deleteContact } from './ajax'
+import SortableComponent from './dragdrop'
+import DisplayContacts from './displayContacts'
 
 class InputFields extends Component{
   state = {
@@ -9,38 +11,78 @@ class InputFields extends Component{
     number: '',
     nameList: [],
     stepNo: 1,
-    searchString: ""
+    searchString: "",
+    errors: null
   };
+
+  componentDidMount() {
+    getContacts()
+      .then(response => {
+        this.setState({nameList: response.data})
+      })
+      .catch(error => console.log(error));
+  }
+
 
   changePage = () => {
     let newStep = this.state.stepNo;
     newStep === 1 ? newStep = 2 : newStep = 1;
-    this.setState({ stepNo: newStep })
+    this.setState({ stepNo: newStep, errors: null })
   }
 
   deleteHandler = (val) => {
+    let response;
     const newState = [...this.state.nameList];
     if ( newState.indexOf(val) > -1 ) {
       newState.splice(newState.indexOf(val), 1);
-      this.setState({
-        nameList: newState
-      })
+
+      response = deleteContact(val)
+        .then(response => {
+          if (response.status === 200) {
+            this.setState({
+              ...this.state,
+              nameList: newState
+            })
+          }
+          return response;
+        })
+        .catch(error => {
+          this.setState({...this.state, errors: error.response.data.errors})
+          return error;
+        });
     }
+
+    return response;
   }
 
   updateHandler = (val, name, number) => {
-    let valIndex = this.state.nameList.indexOf(val)
+    let valIndex = this.state.nameList.indexOf(val);
+    let response;
     let input = {
-      'name': name,
-      'number': number
+      id: val.id,
+      name: name,
+      number: number
     }
     const newState = this.state.nameList.slice();
     if ( valIndex > -1 ) {
       newState.splice(valIndex, 1, input);
-      this.setState({
-        nameList: newState
-      })
+
+      response = updateContact(val, input)
+        .then(response => {
+          if (response.status === 200) {
+            this.setState({
+              ...this.state,
+              nameList: newState
+            })
+          }
+          return response;
+        })
+        .catch(error => {
+          this.setState({...this.state, errors: error.response.data.errors})
+          return error;
+        });
     }
+    return response;
   }
 
   addUserName = (e) => this.setState({ name: e.target.value })
@@ -53,16 +95,26 @@ class InputFields extends Component{
       'name': name,
       'number': number
     }
-    temp.push(input);
-    let newStep = this.state.stepNo;
-    newStep === 1 ? newStep = 2 : newStep= 1;
-    this.setState({
-      nameList: temp,
-      stepNo: newStep,
-      name: '',
-      number: '',
-      searchString: ''
-    })
+    newContact(input)
+      .then(response => {
+        if (response.status === 200) {
+          temp.push(input);
+          let newStep = this.state.stepNo;
+          newStep === 1 ? newStep = 2 : newStep= 1;
+          this.setState({
+            nameList: temp,
+            stepNo: newStep,
+            name: '',
+            number: '',
+            searchString: ''
+          })
+        }
+        return response;
+      })
+      .catch(error => {
+        this.setState({...this.state, errors: error.response.data.errors})
+        return error;
+      });
   }
 
   searchHandler = (e) => this.setState({ searchString: e.target.value })
@@ -106,16 +158,17 @@ class InputFields extends Component{
             />
           </p>
           {
-            this.state.nameList.map( (val, i)=>
+            this.state.nameList.map((val, i) =>
               val.name.toLowerCase().includes(this.state.searchString.toLowerCase())
               ||
               val.number.toLowerCase().includes(this.state.searchString.toLowerCase())
               ?
-              <DisplayContects
+              <DisplayContacts
                 val = {val} key = {i} i = {i}
                 deleteHandler = {this.deleteHandler}
                 editHandler = {this.editHandler}
                 updateHandler = {this.updateHandler}
+                errors = {this.state.errors}
               />
               :
               null
@@ -144,6 +197,8 @@ class InputFields extends Component{
   }
 
   inputFieldsHandler = () => {
+    const { errors } = this.state;
+
     return(
       <div className = "container">
         <div className = "row">
@@ -157,6 +212,7 @@ class InputFields extends Component{
                 placeholder = "Full Name"
               />
             </p>
+            <p>{errors && errors.name}</p>
             <p>
               <input
                 onChange = { this.addUserNumber }
@@ -166,6 +222,7 @@ class InputFields extends Component{
                 placeholder = "10 digit Number"
               />
             </p>
+            <p>{errors && errors.number}</p>
             <p>
               <button
                 disabled = {

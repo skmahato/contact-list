@@ -5,7 +5,6 @@ import Header from './header'
 import InputFields from './inputFields'
 
 class ContactList extends Component {
-
   render() {
     return (
       <div>
