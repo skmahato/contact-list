@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayMove } from 'react-sortable-hoc';
-import axios from 'axios';
 
+import { getContacts, newContact, updateContact, deleteContact } from './ajax'
 import SortableComponent from './dragdrop'
 import DisplayContacts from './displayContacts'
 
@@ -16,11 +16,11 @@ class InputFields extends Component{
   };
 
   componentDidMount() {
-    axios.get('http://localhost:3001/contacts.json')
-    .then(response => {
-      this.setState({nameList: response.data})
-    })
-    .catch(error => console.log(error));
+    getContacts()
+      .then(response => {
+        this.setState({nameList: response.data})
+      })
+      .catch(error => console.log(error));
   }
 
 
@@ -36,7 +36,7 @@ class InputFields extends Component{
     if ( newState.indexOf(val) > -1 ) {
       newState.splice(newState.indexOf(val), 1);
 
-      response = axios.delete(`http://localhost:3001/contacts/${val.id}`)
+      response = deleteContact(val)
         .then(response => {
           if (response.status === 200) {
             this.setState({
@@ -67,7 +67,7 @@ class InputFields extends Component{
     if ( valIndex > -1 ) {
       newState.splice(valIndex, 1, input);
 
-      response = axios.put(`http://localhost:3001/contacts/${val.id}`, input)
+      response = updateContact(val, input)
         .then(response => {
           if (response.status === 200) {
             this.setState({
@@ -95,7 +95,7 @@ class InputFields extends Component{
       'name': name,
       'number': number
     }
-    axios.post('http://localhost:3001/contacts.json', input)
+    newContact(input)
       .then(response => {
         if (response.status === 200) {
           temp.push(input);
