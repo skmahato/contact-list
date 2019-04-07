@@ -11,7 +11,13 @@ export const newContact = (input) => {
 }
 
 export const updateContact = (val, input) => {
-  const options = { method: "PUT", body: buildParam(input) };
+  const options = {
+    method: "PUT",
+    body: buildParam(input),
+    headers: {
+      "Access-Control-Allow-Origin": "*"
+    }
+  };
 
   return fetch(`${url}/${val.id}`, options).then(response => response.json());
 };
