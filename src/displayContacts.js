@@ -12,43 +12,41 @@ class DisplayContacts extends Component{
   addUserNumber = (e) => this.setState({ number: e.target.value })
 
   editHandler = () => {
-    let isEditing=this.state.isEditing
-    isEditing = !isEditing;
-    let newName = this.props.val.name;
-    let newNum = this.props.val.number;
+    const { name, number } = this.props.val;
     this.setState({
-      isEditing: isEditing,
-      name: newName,
-      number: newNum
+      isEditing: !this.state.isEditing,
+      name,
+      number
     })
   }
 
   updateClick = (val, name, number) => {
     this.props.updateHandler(val, name, number)
       .then(response => {
-        if (response.status === 200) {
+        if (!response.errors) {
           this.editHandler();
         }
       });
   }
 
   listElement = () => {
+    const { val, deleteHandler } = this.props;
     return(
       <div className = "row list-style contact-info">
         <div className = "col-sm-4 contact-info">
-          <h4>{ this.props.val.name }</h4>
+          <h4>{val.name}</h4>
         </div>
         <div className = "col-sm-4 contact-info">
-          <h4>{ this.props.val.number }</h4>
+          <h4>{val.number}</h4>
         </div>
         <div className = "col-sm-4 contact-info">
           <button
-            onClick = { () => this.props.deleteHandler(this.props.val) }
+            onClick = {() => deleteHandler(this.props.val)}
             className = "btn btn-danger button-style">
             Delete
           </button>
           <button
-            onClick = { () => this.editHandler() }
+            onClick = {() => this.editHandler()}
             className = "btn btn-primary button-style">
             Edit
           </button>

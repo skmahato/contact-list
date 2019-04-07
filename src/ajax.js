@@ -1,36 +1,31 @@
-import axios from 'axios';
+const url = (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') ?
+  'http://localhost:3001/contacts' :
+  'https://reactjs-contact-list-api.herokuapp.com/contacts';
 
-const devUrl = 'http://localhost:3001/contacts';
-const liveUrl = 'https://reactjs-contact-list-api.herokuapp.com/contacts';
-
-export const getContacts = () => {
-  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-    return axios.get(devUrl);
-  } else {
-    return axios.get(liveUrl);
-  }
-};
+export const getContacts = () => fetch(url).then(response => response.json());
 
 export const newContact = (input) => {
-  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-    return axios.post(devUrl, input);
-  } else {
-    return axios.post(liveUrl, input);
-  }
+  const options = { method: "POST", body: buildParam(input) };
+
+  return fetch(url, options).then(response => response.json());
 }
 
 export const updateContact = (val, input) => {
-  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-    return axios.put(`${devUrl}/${val.id}`, input);
-  } else {
-    return axios.put(`${liveUrl}/${val.id}`, input);
-  }
+  const options = { method: "PUT", body: buildParam(input) };
+
+  return fetch(`${url}/${val.id}`, options).then(response => response.json());
 };
 
 export const deleteContact = (val) => {
-  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-    return axios.delete(`${devUrl}/${val.id}`);
-  } else {
-    return axios.delete(`${liveUrl}/${val.id}`)
-  }
+  const options = { method: "DELETE" };
+
+  return fetch(`${url}/${val.id}`, options).then(response => response.json());
 };
+
+function buildParam(params) {
+  let fD = new FormData();
+  Object.keys(params).map(param => {
+    return fD.append(param, params[param]);
+  });
+  return fD;
+}

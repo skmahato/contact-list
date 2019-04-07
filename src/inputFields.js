@@ -16,13 +16,8 @@ class InputFields extends Component{
   };
 
   componentDidMount() {
-    getContacts()
-      .then(response => {
-        this.setState({nameList: response.data})
-      })
-      .catch(error => console.log(error));
+    getContacts().then(response => this.setState({ nameList: response }));
   }
-
 
   changePage = () => {
     let newStep = this.state.stepNo;
@@ -31,28 +26,16 @@ class InputFields extends Component{
   }
 
   deleteHandler = (val) => {
-    let response;
     const newState = [...this.state.nameList];
     if ( newState.indexOf(val) > -1 ) {
       newState.splice(newState.indexOf(val), 1);
 
-      response = deleteContact(val)
+      deleteContact(val)
         .then(response => {
-          if (response.status === 200) {
-            this.setState({
-              ...this.state,
-              nameList: newState
-            })
-          }
+          this.setState({ nameList: newState });
           return response;
         })
-        .catch(error => {
-          this.setState({...this.state, errors: error.response.data.errors})
-          return error;
-        });
     }
-
-    return response;
   }
 
   updateHandler = (val, name, number) => {
@@ -69,18 +52,12 @@ class InputFields extends Component{
 
       response = updateContact(val, input)
         .then(response => {
-          if (response.status === 200) {
-            this.setState({
-              ...this.state,
-              nameList: newState
-            })
+          if (response.errors) {
+            return this.setState({ errors: response.errors });
           }
+          this.setState({ nameList: newState });
           return response;
         })
-        .catch(error => {
-          this.setState({...this.state, errors: error.response.data.errors})
-          return error;
-        });
     }
     return response;
   }
@@ -91,31 +68,27 @@ class InputFields extends Component{
 
   addToList(name, number){
     let temp = this.state.nameList
-    let input = {
-      'name': name,
-      'number': number
-    }
+    let input = { name, number };
+
     newContact(input)
       .then(response => {
-        if (response.status === 200) {
-          temp.push(input);
-          let newStep = this.state.stepNo;
-          newStep === 1 ? newStep = 2 : newStep= 1;
-          this.setState({
-            nameList: temp,
-            stepNo: newStep,
-            name: '',
-            number: '',
-            searchString: ''
-          })
+        if (response.errors) {
+          return this.setState({ errors: response.errors });
         }
+
+        temp.push(input);
+        let newStep = this.state.stepNo;
+        newStep === 1 ? newStep = 2 : newStep= 1;
+        this.setState({
+          nameList: temp,
+          stepNo: newStep,
+          name: '',
+          number: '',
+          searchString: ''
+        })
         return response;
-      })
-      .catch(error => {
-        this.setState({...this.state, errors: error.response.data.errors})
-        return error;
       });
-  }
+  };
 
   searchHandler = (e) => this.setState({ searchString: e.target.value })
 
