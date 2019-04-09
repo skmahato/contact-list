@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayMove } from 'react-sortable-hoc';
 
-import { getContacts, newContact, updateContact, deleteContact } from './ajax'
+import { getContacts, newContact, updateContact, deleteContact } from './api/contact_api'
 import SortableComponent from './dragdrop'
 import DisplayContacts from './displayContacts'
 
@@ -76,6 +76,7 @@ class InputFields extends Component{
           return this.setState({ errors: response.errors });
         }
 
+        input = { ...input, id: response.id };
         temp.push(input);
         let newStep = this.state.stepNo;
         newStep === 1 ? newStep = 2 : newStep= 1;
